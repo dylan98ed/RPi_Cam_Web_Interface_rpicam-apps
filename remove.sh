@@ -48,7 +48,7 @@ source ./config.txt
 
 fn_stop ()
 { # This is function stop
-        sudo killall raspimjpeg 2>/dev/null
+        sudo killall rpicam-jpeg 2>/dev/null
         sudo killall php 2>/dev/null
         sudo killall motion 2>/dev/null
         sudo service apache2 stop >dev/null 2>&1
@@ -121,8 +121,8 @@ else
    sudo rm /var/www/*
 fi
 sudo rm /etc/sudoers.d/RPI_Cam_Web_Interface
-sudo rm /usr/bin/raspimjpeg
-sudo rm /etc/raspimjpeg
+sudo rm /usr/bin/rpicam-jpeg
+sudo rm /etc/rpicam-jpeg
 fn_autostart_disable
 
 sudo mv etc/nginx/sites-available/*default* /etc/nginx/sites-available >/dev/null 2>&1

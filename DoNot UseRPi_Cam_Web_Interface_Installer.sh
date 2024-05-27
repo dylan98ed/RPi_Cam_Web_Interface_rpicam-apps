@@ -107,7 +107,7 @@ fi
 # -------------------------------- START/FUNCTIONS --------------------------------	
 FN_STOP ()
 { # This is function stop
-        sudo killall raspimjpeg
+        sudo killall rpicam-jpeg
         sudo killall php
         sudo killall motion
         sudo service apache2 stop >/dev/null 2>&1
@@ -358,7 +358,7 @@ sudo bash -c "cat >> /etc/rc.local" << EOF
 mkdir -p /dev/shm/mjpeg
 chown www-data:www-data /dev/shm/mjpeg
 chmod 777 /dev/shm/mjpeg
-sleep 4;su -c 'raspimjpeg > /dev/null 2>&1 &' www-data
+sleep 4;su -c 'rpicam-jpeg > /dev/null 2>&1 &' www-data
 if [ -e /etc/debian_version ]; then
   sleep 4;su -c "php $INSTALLDIR/schedule.php > /dev/null 2>&1 &" www-data
 else
@@ -666,7 +666,7 @@ case "$1" in
         sudo mkdir -p /dev/shm/mjpeg
         sudo chown www-data:www-data /dev/shm/mjpeg
         sudo chmod 777 /dev/shm/mjpeg
-        sleep 1;sudo su -c 'raspimjpeg > /dev/null &' www-data
+        sleep 1;sudo su -c 'rpicam-jpeg > /dev/null &' www-data
         if [ -e /etc/debian_version ]; then
           sleep 1;sudo su -c "php $WWWROOT/$RPICAMDIR/schedule.php > /dev/null &" www-data
         else
@@ -690,8 +690,8 @@ backtitle="Copyright (c) 2014, Silvan Melchior. RPi Cam $version"
 
 FN_MENU_INSTALLER ()
 {
-# We using only "raspimjpeg" right now, but we need extracted values for future development.
-process=('raspimjpeg' 'php' 'motion'); 
+# We using only "rpicam-jpeg" right now, but we need extracted values for future development.
+process=('rpicam-jpeg' 'php' 'motion'); 
 for i in "${process[@]}"
   do
     ps cax | grep $i > /dev/null
@@ -708,7 +708,7 @@ source ./tmp_status
 stopped_rpicam=""
 started_rpicam=""
 
-if [ "$process_raspimjpeg" == "started" ] ; then
+if [ "$process_rpicam-jpeg" == "started" ] ; then
   started_rpicam="(started)"
 else
   stopped_rpicam="(stopped)"
@@ -732,7 +732,7 @@ do
 
   install)
         dialog --title 'Basic Install message' --colors --infobox "\Zb\Z1Notice!\Zn Configure you settings after install using \Zb\Z1\"configure\"\Zn option." 5 43 ; sleep 4
-        sudo killall raspimjpeg
+        sudo killall rpicam-jpeg
         sudo apt-get install -y apache2 php5 php5-cli libapache2-mod-php5 gpac motion zip libav-tools usbmount
         sudo a2enmod authz_groupfile
         sudo service apache2 restart
@@ -874,37 +874,37 @@ do
         sudo cp etc/sudoers.d/RPI_Cam_Web_Interface /etc/sudoers.d/
         sudo chmod 440 /etc/sudoers.d/RPI_Cam_Web_Interface
 
-        sudo cp -r bin/raspimjpeg /opt/vc/bin/
-        sudo chmod 755 /opt/vc/bin/raspimjpeg
-        if [ ! -e /usr/bin/raspimjpeg ]; then
-          sudo ln -s /opt/vc/bin/raspimjpeg /usr/bin/raspimjpeg
+        sudo cp -r bin/rpicam-jpeg /opt/vc/bin/
+        sudo chmod 755 /opt/vc/bin/rpicam-jpeg
+        if [ ! -e /usr/bin/rpicam-jpeg ]; then
+          sudo ln -s /opt/vc/bin/rpicam-jpeg /usr/bin/rpicam-jpeg
         fi
 
         if [ "$WWWROOT" == "/var/www" ]; then
           if [ "$RPICAMDIR" == "" ]; then
-            sudo cat etc/raspimjpeg/raspimjpeg.1 > etc/raspimjpeg/raspimjpeg
+            sudo cat etc/rpicam-jpeg/rpicam-jpeg.1 > etc/rpicam-jpeg/rpicam-jpeg
           else
-            sudo sed -e "s/www/www\/$RPICAMDIR/" etc/raspimjpeg/raspimjpeg.1 > etc/raspimjpeg/raspimjpeg
+            sudo sed -e "s/www/www\/$RPICAMDIR/" etc/rpicam-jpeg/rpicam-jpeg.1 > etc/rpicam-jpeg/rpicam-jpeg
           fi
         elif [ "$WWWROOT" == "/var/www/html" ]; then
           if [ "$RPICAMDIR" == "" ]; then
-            sudo sed -e "s/www/www\/html/" etc/raspimjpeg/raspimjpeg.1 > etc/raspimjpeg/raspimjpeg
+            sudo sed -e "s/www/www\/html/" etc/rpicam-jpeg/rpicam-jpeg.1 > etc/rpicam-jpeg/rpicam-jpeg
           else
-            sudo sed -e "s/www/www\/html\/$RPICAMDIR/" etc/raspimjpeg/raspimjpeg.1 > etc/raspimjpeg/raspimjpeg
+            sudo sed -e "s/www/www\/html\/$RPICAMDIR/" etc/rpicam-jpeg/rpicam-jpeg.1 > etc/rpicam-jpeg/rpicam-jpeg
           fi		
         fi
 		
         if [ `cat /proc/cmdline |awk -v RS=' ' -F= '/boardrev/ { print $2 }'` == "0x11" ]; then
-          sudo sed -i "s/^camera_num 0/camera_num 1/g" etc/raspimjpeg/raspimjpeg
+          sudo sed -i "s/^camera_num 0/camera_num 1/g" etc/rpicam-jpeg/rpicam-jpeg
         fi
-        if [ -e /etc/raspimjpeg ]; then
-          $color_green; echo "Your custom raspimjpeg backed up at /etc/raspimjpeg.bak"; $color_reset
-          sudo cp -r /etc/raspimjpeg /etc/raspimjpeg.bak
+        if [ -e /etc/rpicam-jpeg ]; then
+          $color_green; echo "Your custom rpicam-jpeg backed up at /etc/rpicam-jpeg.bak"; $color_reset
+          sudo cp -r /etc/rpicam-jpeg /etc/rpicam-jpeg.bak
         fi
-        sudo cp -r etc/raspimjpeg/raspimjpeg /etc/
-        sudo chmod 644 /etc/raspimjpeg
-        if [ ! -e $WWWROOT/$RPICAMDIR/raspimjpeg ]; then
-          sudo ln -s /etc/raspimjpeg $WWWROOT/$RPICAMDIR/raspimjpeg
+        sudo cp -r etc/rpicam-jpeg/rpicam-jpeg /etc/
+        sudo chmod 644 /etc/rpicam-jpeg
+        if [ ! -e $WWWROOT/$RPICAMDIR/rpicam-jpeg ]; then
+          sudo ln -s /etc/rpicam-jpeg $WWWROOT/$RPICAMDIR/rpicam-jpeg
         fi
 
         FN_MOTION
@@ -942,7 +942,7 @@ do
 
   install_nginx)
         dialog --title 'Basic Install message' --colors --infobox "\Zb\Z1Notice!\Zn Configure you settings after install using \Zb\Z1\"configure\"\Zn option." 5 43 ; sleep 4
-        sudo killall raspimjpeg
+        sudo killall rpicam-jpeg
         sudo apt-get install -y nginx php5-fpm php5-cli php5-common php-apc gpac motion zip libav-tools
 
 	# -------------------------------- START/File locations --------------------------------
@@ -1023,29 +1023,29 @@ do
         sudo cp etc/sudoers.d/RPI_Cam_Web_Interface /etc/sudoers.d/
         sudo chmod 440 /etc/sudoers.d/RPI_Cam_Web_Interface
 
-        sudo cp -r bin/raspimjpeg /opt/vc/bin/
-        sudo chmod 755 /opt/vc/bin/raspimjpeg
-        if [ ! -e /usr/bin/raspimjpeg ]; then
-          sudo ln -s /opt/vc/bin/raspimjpeg /usr/bin/raspimjpeg
+        sudo cp -r bin/rpicam-jpeg /opt/vc/bin/
+        sudo chmod 755 /opt/vc/bin/rpicam-jpeg
+        if [ ! -e /usr/bin/rpicam-jpeg ]; then
+          sudo ln -s /opt/vc/bin/rpicam-jpeg /usr/bin/rpicam-jpeg
         fi
 
         if [ "$RPICAMDIR" == "" ]; then
-          sudo cat etc/raspimjpeg/raspimjpeg.1 > etc/raspimjpeg/raspimjpeg
+          sudo cat etc/rpicam-jpeg/rpicam-jpeg.1 > etc/rpicam-jpeg/rpicam-jpeg
         else
-          sudo sed -e "s/www/www\/$RPICAMDIR/" etc/raspimjpeg/raspimjpeg.1 > etc/raspimjpeg/raspimjpeg
+          sudo sed -e "s/www/www\/$RPICAMDIR/" etc/rpicam-jpeg/rpicam-jpeg.1 > etc/rpicam-jpeg/rpicam-jpeg
         fi
         if [ `cat /proc/cmdline |awk -v RS=' ' -F= '/boardrev/ { print $2 }'` == "0x11" ]; then
-          sed -i "s/^camera_num 0/camera_num 1/g" etc/raspimjpeg/raspimjpeg
+          sed -i "s/^camera_num 0/camera_num 1/g" etc/rpicam-jpeg/rpicam-jpeg
         fi
-        if [ -e /etc/raspimjpeg ]; then
-          $color_green; echo "Your custom raspimjpeg backed up at /etc/raspimjpeg.bak"; $color_reset
-          sudo cp -r /etc/raspimjpeg /etc/raspimjpeg.bak
+        if [ -e /etc/rpicam-jpeg ]; then
+          $color_green; echo "Your custom rpicam-jpeg backed up at /etc/rpicam-jpeg.bak"; $color_reset
+          sudo cp -r /etc/rpicam-jpeg /etc/rpicam-jpeg.bak
         fi
-        sudo cp -r /etc/raspimjpeg /etc/raspimjpeg.bak
-        sudo cp -r etc/raspimjpeg/raspimjpeg /etc/
-        sudo chmod 644 /etc/raspimjpeg
-        if [ ! -e $WWWROOT/$RPICAMDIR/raspimjpeg ]; then
-          sudo ln -s /etc/raspimjpeg $WWWROOT/$RPICAMDIR/raspimjpeg
+        sudo cp -r /etc/rpicam-jpeg /etc/rpicam-jpeg.bak
+        sudo cp -r etc/rpicam-jpeg/rpicam-jpeg /etc/
+        sudo chmod 644 /etc/rpicam-jpeg
+        if [ ! -e $WWWROOT/$RPICAMDIR/rpicam-jpeg ]; then
+          sudo ln -s /etc/rpicam-jpeg $WWWROOT/$RPICAMDIR/rpicam-jpeg
         fi
 
         FN_AUTOSTART
@@ -1084,7 +1084,7 @@ do
 	  CAMSTATUS="\Zb\Z1(Disabled)"
 	fi
 		
-        if grep -Fq '#START RASPIMJPEG SECTION' /etc/rc.local; then
+        if grep -Fq '#START rpicam-jpeg SECTION' /etc/rc.local; then
           AUTOSTART="\Zb\Z2(Enabled)"
         else
           AUTOSTART="\Zb\Z1(Disabled)"
@@ -1142,15 +1142,15 @@ do
                 ./$SCRIPT
                 ;;
              upgrade)
-                sudo killall raspimjpeg
+                sudo killall rpicam-jpeg
                 if [ $(dpkg-query -W -f='${Status}' "zip" 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
                   sudo apt-get install -y zip
                 fi
-                sudo cp -r bin/raspimjpeg /opt/vc/bin/
-                sudo chmod 755 /opt/vc/bin/raspimjpeg
+                sudo cp -r bin/rpicam-jpeg /opt/vc/bin/
+                sudo chmod 755 /opt/vc/bin/rpicam-jpeg
                 sudo cp -r www/* $WWWROOT/$RPICAMDIR/
-                if [ ! -e $WWWROOT/$RPICAMDIR/raspimjpeg ]; then
-                  sudo ln -s /etc/raspimjpeg $WWWROOT/$RPICAMDIR/raspimjpeg
+                if [ ! -e $WWWROOT/$RPICAMDIR/rpicam-jpeg ]; then
+                  sudo ln -s /etc/rpicam-jpeg $WWWROOT/$RPICAMDIR/rpicam-jpeg
                 fi
                 sudo chmod 755 $WWWROOT/$RPICAMDIR/raspizip.sh
                 dialog --title 'Upgrade message' --infobox 'Upgrade finished.' 4 20 ; sleep 2
@@ -1185,7 +1185,7 @@ do
                   sudo mkdir -p ./Backup/$BACKUPDIR
                   sudo cp ./config.txt ./Backup/$BACKUPDIR
                   sudo cp /etc/motion/motion.conf ./Backup/$BACKUPDIR
-                  sudo cp /etc/raspimjpeg ./Backup/$BACKUPDIR				
+                  sudo cp /etc/rpicam-jpeg ./Backup/$BACKUPDIR				
                   if [ ! "$RPICAMDIR" == "" ]; then
                     sudo cp $WWWROOT/$RPICAMDIR/uconfig ./Backup/$BACKUPDIR
                   else
@@ -1197,7 +1197,7 @@ do
                 {
                   sudo cp $ANSW/config.txt ./config.txt
                   sudo cp $ANSW/motion.conf /etc/motion/motion.conf
-                  sudo cp $ANSW/raspimjpeg /etc/raspimjpeg
+                  sudo cp $ANSW/rpicam-jpeg /etc/rpicam-jpeg
                   if [ ! "$RPICAMDIR" == "" ]; then
                     sudo cp $ANSW/uconfig $WWWROOT/$RPICAMDIR/uconfig
                   else
@@ -1285,7 +1285,7 @@ do
                 sudo mkdir -p /dev/shm/mjpeg
                 sudo chown www-data:www-data /dev/shm/mjpeg
                 sudo chmod 777 /dev/shm/mjpeg
-                sleep 1;sudo su -c 'raspimjpeg &' www-data
+                sleep 1;sudo su -c 'rpicam-jpeg &' www-data
                 if [ -e /etc/debian_version ]; then
                   sleep 1;sudo sudo su -c "php $WWWROOT/$RPICAMDIR/schedule.php &" www-data
                 else
@@ -1320,7 +1320,7 @@ do
         sudo mkdir -p /dev/shm/mjpeg
         sudo chown www-data:www-data /dev/shm/mjpeg
         sudo chmod 777 /dev/shm/mjpeg
-        sleep 1;sudo su -c 'raspimjpeg > /dev/null &' www-data
+        sleep 1;sudo su -c 'rpicam-jpeg > /dev/null &' www-data
         if [ -e /etc/debian_version ]; then
           sleep 1;sudo su -c "php $WWWROOT/$RPICAMDIR/schedule.php > /dev/null &" www-data
         else
@@ -1378,12 +1378,12 @@ do
 	  sudo mkdir -p ./Backup/removed-$BACKUPDIR
 	  sudo cp ./config.txt ./Backup/removed-$BACKUPDIR
 	  sudo cp /etc/motion/motion.conf ./removed-$BACKUPDIR
-	  sudo cp /etc/raspimjpeg ./Backup/removed-$BACKUPDIR				
+	  sudo cp /etc/rpicam-jpeg ./Backup/removed-$BACKUPDIR				
 	  sudo cp $INSTALLDIR/uconfig ./Backup/removed-$BACKUPDIR
 	
 	  sudo rm /etc/sudoers.d/RPI_Cam_Web_Interface
-	  sudo rm /usr/bin/raspimjpeg
-	  sudo rm /etc/raspimjpeg
+	  sudo rm /usr/bin/rpicam-jpeg
+	  sudo rm /etc/rpicam-jpeg
 	  if [ ! "$RPICAMDIR" == "" ]; then
 	    sudo rm -r $WWWROOT/$RPICAMDIR
 	  else

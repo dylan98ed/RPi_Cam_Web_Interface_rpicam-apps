@@ -21,7 +21,7 @@
 	define('CAM_STRING', APP_NAME . " " . APP_VERSION . ": " . CAM_NAME . '@' . HOST_NAME);
 
 	// file where default settings changes are stored
-	define('CONFIG_FILE1', 'raspimjpeg');
+	define('CONFIG_FILE1', 'rpicam-jpeg');
 
 	// file where user specific settings changes are stored
 	define('CONFIG_FILE2', 'uconfig');

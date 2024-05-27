@@ -159,7 +159,7 @@ fi
 
 fn_stop ()
 { # This is function stop
-        sudo killall raspimjpeg 2>/dev/null
+        sudo killall rpicam-jpeg 2>/dev/null
         sudo killall php 2>/dev/null
         sudo killall motion 2>/dev/null
 }
@@ -329,7 +329,7 @@ if [ "$autostart" == "yes" ]; then
 mkdir -p /dev/shm/mjpeg
 chown www-data:www-data /dev/shm/mjpeg
 chmod 777 /dev/shm/mjpeg
-sleep 4;su -c 'raspimjpeg > /dev/null 2>&1 &' www-data
+sleep 4;su -c 'rpicam-jpeg > /dev/null 2>&1 &' www-data
 if [ -e /etc/debian_version ]; then
   sleep 4;su -c 'php /var/www$rpicamdir/schedule.php > /dev/null 2>&1 &' www-data
 else
@@ -429,24 +429,24 @@ sudo chown -R www-data:www-data /var/www$rpicamdir
 sudo cp etc/sudoers.d/RPI_Cam_Web_Interface /etc/sudoers.d/
 sudo chmod 440 /etc/sudoers.d/RPI_Cam_Web_Interface
 
-sudo cp -r bin/raspimjpeg /opt/vc/bin/
-sudo chmod 755 /opt/vc/bin/raspimjpeg
-if [ ! -e /usr/bin/raspimjpeg ]; then
-   sudo ln -s /opt/vc/bin/raspimjpeg /usr/bin/raspimjpeg
+sudo cp -r bin/rpicam-jpeg /opt/vc/bin/
+sudo chmod 755 /opt/vc/bin/rpicam-jpeg
+if [ ! -e /usr/bin/rpicam-jpeg ]; then
+   sudo ln -s /opt/vc/bin/rpicam-jpeg /usr/bin/rpicam-jpeg
 fi
 
-sed -e "s/www/www$rpicamdirEsc/" etc/raspimjpeg/raspimjpeg.1 > etc/raspimjpeg/raspimjpeg
+sed -e "s/www/www$rpicamdirEsc/" etc/rpicam-jpeg/rpicam-jpeg.1 > etc/rpicam-jpeg/rpicam-jpeg
 if [[ `cat /proc/cmdline |awk -v RS=' ' -F= '/boardrev/ { print $2 }'` == "0x11" ]]; then
-   sed -i 's/^camera_num 0/camera_num 1/g' etc/raspimjpeg/raspimjpeg
+   sed -i 's/^camera_num 0/camera_num 1/g' etc/rpicam-jpeg/rpicam-jpeg
 fi
-if [ -e /etc/raspimjpeg ]; then
-   $color_green; echo "Your custom raspimjpg backed up at /etc/raspimjpeg.bak"; $color_reset
-   sudo cp -r /etc/raspimjpeg /etc/raspimjpeg.bak
+if [ -e /etc/rpicam-jpeg ]; then
+   $color_green; echo "Your custom raspimjpg backed up at /etc/rpicam-jpeg.bak"; $color_reset
+   sudo cp -r /etc/rpicam-jpeg /etc/rpicam-jpeg.bak
 fi
-sudo cp -r etc/raspimjpeg/raspimjpeg /etc/
-sudo chmod 644 /etc/raspimjpeg
-if [ ! -e /var/www$rpicamdir/raspimjpeg ]; then
-   sudo ln -s /etc/raspimjpeg /var/www$rpicamdir/raspimjpeg
+sudo cp -r etc/rpicam-jpeg/rpicam-jpeg /etc/
+sudo chmod 644 /etc/rpicam-jpeg
+if [ ! -e /var/www$rpicamdir/rpicam-jpeg ]; then
+   sudo ln -s /etc/rpicam-jpeg /var/www$rpicamdir/rpicam-jpeg
 fi
 
 sudo usermod -a -G video www-data
